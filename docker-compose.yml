@@ -1,0 +1,75 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: filechunking-postgres
+    environment:
+      POSTGRES_DB: filechunking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - filechunking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: filechunking-mongodb
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - filechunking-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # File Chunking Application
+  filechunking-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final   # test -> publish -> final
+    container_name: filechunking-app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=filechunking;Username=postgres;Password=1
+      - ConnectionStrings__PostgreSQL=Host=postgres;Database=filechunking_storage;Username=postgres;Password=1
+      - ConnectionStrings__MongoDB=mongodb://mongodb:27017
+    ports:
+      - "8080:80"
+      - "8081:443"
+    volumes:
+      - C:/filechunking/files:/app/files
+      - C:/filechunking/restored:/app/restored
+      - app_chunks:/app/chunks
+      - app_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - filechunking-network
+    restart: no #unless-stopped
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  app_chunks:
+  app_logs:
+
+networks:
+  filechunking-network:
+    driver: bridge
