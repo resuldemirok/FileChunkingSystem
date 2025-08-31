@@ -1,6 +1,7 @@
 using FileChunkingSystem.Application.Interfaces;
 using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Console.Handlers.Abstract;
+using FileChunkingSystem.Console.Helpers;
 using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
@@ -61,20 +62,10 @@ public class FileUploadHandler : BaseHandler, IConsoleHandler
         }
     }
 
-    private static Dictionary<string, MenuFileUploadActions> CreateMenuFileUploadActions()
-    {
-        return new Dictionary<string, MenuFileUploadActions>
-        {
-            ["Add file"] = MenuFileUploadActions.AddFile,
-            ["Start process"] = MenuFileUploadActions.StartProcess,
-            ["Cancel"] = MenuFileUploadActions.Cancel
-        };
-    }
-
     private static List<string>? GetFilePathsWithMenu()
     {
         var filePaths = new List<string>();
-        var menuFileUploadActions = CreateMenuFileUploadActions();
+        var menuFileUploadActions = EnumHelpers.ToDictionary<MenuFileUploadActions>();
 
         while (true)
         {

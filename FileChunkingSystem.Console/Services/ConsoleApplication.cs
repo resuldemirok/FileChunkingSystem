@@ -1,4 +1,5 @@
 using FileChunkingSystem.Console.Handlers.Factory;
+using FileChunkingSystem.Console.Helpers;
 using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
@@ -22,7 +23,7 @@ public class ConsoleApplication
     {
         ShowWelcomeMessage();
 
-        var menuOptions = CreateMenuOptions();
+        var menuOptions = EnumHelpers.ToDictionary<MenuOptions>();
 
         while (true)
         {
@@ -52,19 +53,6 @@ public class ConsoleApplication
             new FigletText("File Chunking System")
                 .LeftJustified()
                 .Color(Color.Blue));
-    }
-
-    private Dictionary<string, MenuOptions> CreateMenuOptions()
-    {
-        return new Dictionary<string, MenuOptions>
-        {
-            ["Upload and Chunk File"] = MenuOptions.Upload,
-            ["Merge and Download File"] = MenuOptions.Merge,
-            ["List All Files"] = MenuOptions.List,
-            ["Performance Report"] = MenuOptions.Report,
-            ["Delete File"] = MenuOptions.Delete,
-            ["Exit"] = MenuOptions.Exit
-        };
     }
 
     private MenuOptions GetUserChoice(Dictionary<string, MenuOptions> menuOptions)

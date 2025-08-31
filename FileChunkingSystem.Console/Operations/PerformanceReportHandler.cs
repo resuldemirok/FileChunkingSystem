@@ -1,6 +1,7 @@
 using FileChunkingSystem.Application.Interfaces;
 using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Console.Handlers.Abstract;
+using FileChunkingSystem.Console.Helpers;
 using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Rendering;
@@ -357,7 +358,7 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
 
     private MenuPerformanceExportOptions GetExportFormat()
     {
-        var menuExportOptions = CreateMenuExportOptions();
+        var menuExportOptions = EnumHelpers.ToDictionary<MenuPerformanceExportOptions>();
 
         var format = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -372,17 +373,6 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
         var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         var extension = format.ToLower();
         return $"performance_report_{timestamp}.{extension}";
-    }
-
-    private Dictionary<string, MenuPerformanceExportOptions> CreateMenuExportOptions()
-    {
-        return new Dictionary<string, MenuPerformanceExportOptions>
-        {
-            ["JSON"] = MenuPerformanceExportOptions.JSON,
-            ["CSV"] = MenuPerformanceExportOptions.CSV,
-            ["HTML"] = MenuPerformanceExportOptions.HTML,
-            ["TXT"] = MenuPerformanceExportOptions.TXT
-        };
     }
 
     private async Task ExportInFormat(PerformanceReportModel report, string filePath, MenuPerformanceExportOptions format)

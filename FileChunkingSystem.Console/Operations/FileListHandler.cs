@@ -3,6 +3,7 @@ using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Domain.Interfaces;
 using FileChunkingSystem.Console.Handlers.Abstract;
 using FileChunkingSystem.Domain.Entities;
+using FileChunkingSystem.Console.Helpers;
 using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Rendering;
@@ -69,15 +70,7 @@ public class FileListHandler : BaseHandler, IConsoleHandler
 
     private ListAction GetListAction()
     {
-        var actions = new Dictionary<string, ListAction>
-        {
-            ["View All Files"] = ListAction.ViewAll,
-            ["Search Files"] = ListAction.Search,
-            ["Filter Files by Criteria"] = ListAction.Filter,
-            ["View File Details"] = ListAction.Details,
-            ["Export File List"] = ListAction.Export,
-            ["Cleanup Old Files"] = ListAction.Cleanup
-        };
+        var actions = EnumHelpers.ToDictionary<ListAction>();
 
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -432,23 +425,12 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         ShowWarning($"Total size to be freed: {FormatBytes(totalSize)}");
     }
 
-    private Dictionary<string, MenuFileActions> CreateMenuFileActions()
-    {
-        return new Dictionary<string, MenuFileActions>
-        {
-            ["View Details"] = MenuFileActions.ViewDetails,
-            ["Download/Merge"] = MenuFileActions.DownloadMerge,
-            ["Delete"] = MenuFileActions.Delete,
-            ["Update Metadata"] = MenuFileActions.UpdateMetadata
-        };
-    }
-
     private async Task OfferFileActions(IEnumerable<FileMetadataModel> files)
     {
         if (!AnsiConsole.Confirm("Would you like to perform an action on any of these files?", false))
             return;
 
-        var menuFileActions = CreateMenuFileActions();
+        var menuFileActions = EnumHelpers.ToDictionary<MenuFileActions>();
 
         var action = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -492,23 +474,12 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         }
     }
 
-    private Dictionary<string, MenuSingleFileActions> CreateMenuSingleFileActions()
-    {
-        return new Dictionary<string, MenuSingleFileActions>
-        {
-            ["Download/Merge"] = MenuSingleFileActions.DownloadMerge,
-            ["Delete"] = MenuSingleFileActions.Delete,
-            ["Update Metadata"] = MenuSingleFileActions.UpdateMetadata,
-            ["Verify Integrity"] = MenuSingleFileActions.VerifyIntegrity
-        };
-    }
-
     private async Task OfferSingleFileActions(FileMetadataModel fileDetails)
     {
         if (!AnsiConsole.Confirm("Would you like to perform an action on this file?", false))
             return;
 
-        var menuFileActions = CreateMenuSingleFileActions();
+        var menuFileActions = EnumHelpers.ToDictionary<MenuSingleFileActions>();
 
         var action = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -817,19 +788,9 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         return Guid.Parse(fileIdInput);
     }
 
-    private Dictionary<string, MenuExportOptions> CreateMenuExportOptions()
-    {
-        return new Dictionary<string, MenuExportOptions>
-        {
-            ["CSV"] = MenuExportOptions.CSV,
-            ["JSON"] = MenuExportOptions.JSON,
-            ["XML"] = MenuExportOptions.XML
-        };
-    }
-
     private MenuExportOptions GetExportFormat()
     {
-        var menuExportOptions = CreateMenuExportOptions();
+        var menuExportOptions = EnumHelpers.ToDictionary<MenuExportOptions>();
 
         var format = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
