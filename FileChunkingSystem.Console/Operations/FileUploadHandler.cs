@@ -1,6 +1,7 @@
 using FileChunkingSystem.Application.Interfaces;
 using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Console.Handlers.Abstract;
+using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
@@ -58,13 +59,6 @@ public class FileUploadHandler : BaseHandler, IConsoleHandler
             ShowError($"Upload failed: {ex.Message}");
             throw;
         }
-    }
-
-    private enum MenuFileUploadActions
-    {
-        AddFile,
-        StartProcess,
-        Cancel
     }
 
     private static Dictionary<string, MenuFileUploadActions> CreateMenuFileUploadActions()

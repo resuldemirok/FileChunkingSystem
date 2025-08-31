@@ -1,11 +1,12 @@
 using FileChunkingSystem.Application.Interfaces;
 using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Console.Handlers.Abstract;
+using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
-using Spectre.Console;
 using Spectre.Console.Rendering;
-using System.Text;
 using System.Text.Json;
+using Spectre.Console;
+using System.Text;
 
 namespace FileChunkingSystem.Console.Handlers;
 
@@ -354,7 +355,7 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
         }
     }
 
-    private MenuExportOptions GetExportFormat()
+    private MenuPerformanceExportOptions GetExportFormat()
     {
         var menuExportOptions = CreateMenuExportOptions();
 
@@ -373,39 +374,31 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
         return $"performance_report_{timestamp}.{extension}";
     }
 
-    private enum MenuExportOptions
+    private Dictionary<string, MenuPerformanceExportOptions> CreateMenuExportOptions()
     {
-        JSON,
-        CSV,
-        HTML,
-        TXT
-    }
-
-    private Dictionary<string, MenuExportOptions> CreateMenuExportOptions()
-    {
-        return new Dictionary<string, MenuExportOptions>
+        return new Dictionary<string, MenuPerformanceExportOptions>
         {
-            ["JSON"] = MenuExportOptions.JSON,
-            ["CSV"] = MenuExportOptions.CSV,
-            ["HTML"] = MenuExportOptions.HTML,
-            ["TXT"] = MenuExportOptions.TXT
+            ["JSON"] = MenuPerformanceExportOptions.JSON,
+            ["CSV"] = MenuPerformanceExportOptions.CSV,
+            ["HTML"] = MenuPerformanceExportOptions.HTML,
+            ["TXT"] = MenuPerformanceExportOptions.TXT
         };
     }
 
-    private async Task ExportInFormat(PerformanceReportModel report, string filePath, MenuExportOptions format)
+    private async Task ExportInFormat(PerformanceReportModel report, string filePath, MenuPerformanceExportOptions format)
     {
         switch (format)
         {
-            case MenuExportOptions.JSON:
+            case MenuPerformanceExportOptions.JSON:
                 await ExportAsJson(report, filePath);
                 break;
-            case MenuExportOptions.CSV:
+            case MenuPerformanceExportOptions.CSV:
                 await ExportAsCsv(report, filePath);
                 break;
-            case MenuExportOptions.HTML:
+            case MenuPerformanceExportOptions.HTML:
                 await ExportAsHtml(report, filePath);
                 break;
-            case MenuExportOptions.TXT:
+            case MenuPerformanceExportOptions.TXT:
                 await ExportAsText(report, filePath);
                 break;
         }

@@ -1,4 +1,5 @@
 using FileChunkingSystem.Console.Handlers.Factory;
+using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
@@ -107,14 +108,5 @@ public class ConsoleApplication
         System.Console.ReadKey();
         AnsiConsole.Clear();
     }
-
-    private enum MenuOptions
-    {
-        Upload,
-        Merge,
-        List,
-        Report,
-        Delete,
-        Exit
-    }
+    
 }

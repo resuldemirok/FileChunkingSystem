@@ -3,6 +3,7 @@ using FileChunkingSystem.Application.Models;
 using FileChunkingSystem.Domain.Interfaces;
 using FileChunkingSystem.Console.Handlers.Abstract;
 using FileChunkingSystem.Domain.Entities;
+using FileChunkingSystem.Console.Enums;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Rendering;
 using Spectre.Console;
@@ -431,14 +432,6 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         ShowWarning($"Total size to be freed: {FormatBytes(totalSize)}");
     }
 
-    private enum MenuFileActions
-    {
-        ViewDetails,
-        DownloadMerge,
-        Delete,
-        UpdateMetadata
-    }
-
     private Dictionary<string, MenuFileActions> CreateMenuFileActions()
     {
         return new Dictionary<string, MenuFileActions>
@@ -497,14 +490,6 @@ public class FileListHandler : BaseHandler, IConsoleHandler
                 OfferMetadataUpdate(fileId.Value);
                 break;
         }
-    }
-
-    private enum MenuSingleFileActions
-    {
-        DownloadMerge,
-        Delete,
-        UpdateMetadata,
-        VerifyIntegrity
     }
 
     private Dictionary<string, MenuSingleFileActions> CreateMenuSingleFileActions()
@@ -832,13 +817,6 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         return Guid.Parse(fileIdInput);
     }
 
-    private enum MenuExportOptions
-    {
-        CSV,
-        JSON,
-        XML
-    }
-
     private Dictionary<string, MenuExportOptions> CreateMenuExportOptions()
     {
         return new Dictionary<string, MenuExportOptions>
@@ -924,13 +902,4 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         return string.IsNullOrWhiteSpace(input) ? null : DateTime.Parse(input);
     }
 
-    private enum ListAction
-    {
-        ViewAll,
-        Search,
-        Filter,
-        Details,
-        Export,
-        Cleanup
-    }
 }
