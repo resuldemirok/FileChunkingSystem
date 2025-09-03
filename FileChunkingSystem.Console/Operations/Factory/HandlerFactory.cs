@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace FileChunkingSystem.Console.Handlers.Factory;
 
+/// <summary>
+/// Factory class for creating console handler instances with proper dependency injection.
+/// </summary>
 public class HandlerFactory
 {
     private readonly IServiceProvider _serviceProvider;

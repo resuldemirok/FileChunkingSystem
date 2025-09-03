@@ -8,6 +8,9 @@ using Spectre.Console;
 
 namespace FileChunkingSystem.Console.Handlers;
 
+/// <summary>
+/// Handles file upload and chunking operations in the console application.
+/// </summary>
 public class FileUploadHandler : BaseHandler, IConsoleHandler
 {
     public FileUploadHandler(
@@ -18,6 +21,10 @@ public class FileUploadHandler : BaseHandler, IConsoleHandler
     {
     }
 
+    /// <summary>
+    /// Handles the file upload and chunking process asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     public async Task HandleAsync()
     {
         try

@@ -6,12 +6,30 @@ using FileChunkingSystem.Domain.Interfaces;
 
 namespace FileChunkingSystem.Console.Exceptions;
 
+/// <summary>
+/// Interface for handling global exceptions throughout the application.
+/// </summary>
 public interface IGlobalExceptionHandler
 {
+    /// <summary>
+    /// Handles exceptions asynchronously with optional context information.
+    /// </summary>
+    /// <param name="exception">The exception to handle</param>
+    /// <param name="context">Optional context information about where the exception occurred</param>
+    /// <returns>A task representing the asynchronous operation</returns>
     Task HandleExceptionAsync(Exception exception, string? context = null);
+
+    /// <summary>
+    /// Handles exceptions synchronously with optional context information.
+    /// </summary>
+    /// <param name="exception">The exception to handle</param>
+    /// <param name="context">Optional context information about where the exception occurred</param>
     void HandleException(Exception exception, string? context = null);
 }
 
+/// <summary>
+/// Global exception handler implementation that provides centralized exception handling with logging and user notification capabilities.
+/// </summary>
 public class GlobalExceptionHandler : IGlobalExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;

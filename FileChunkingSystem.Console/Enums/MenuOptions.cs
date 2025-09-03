@@ -2,6 +2,9 @@ using System.ComponentModel;
 
 namespace FileChunkingSystem.Console.Enums;
 
+/// <summary>
+/// Defines the main menu options available in the console application.
+/// </summary>
 public enum MenuOptions
 {
     [Description("Upload and Chunk File")]

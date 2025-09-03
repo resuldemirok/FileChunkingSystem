@@ -2,6 +2,9 @@ using System.ComponentModel;
 
 namespace FileChunkingSystem.Console.Enums;
 
+/// <summary>
+/// Defines the available actions for file list operations in the console application.
+/// </summary>
 public enum ListAction
 {
     [Description("View All Files")]

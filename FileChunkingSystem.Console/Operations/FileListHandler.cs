@@ -12,6 +12,9 @@ using Mapster;
 
 namespace FileChunkingSystem.Console.Handlers;
 
+/// <summary>
+/// Handles file listing, searching, filtering, and management operations in the console application.
+/// </summary>
 public class FileListHandler : BaseHandler, IConsoleHandler
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -26,6 +29,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Handles the file list management operations asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     public async Task HandleAsync()
     {
         try
@@ -68,6 +75,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         }
     }
 
+    /// <summary>
+    /// Gets the list action to perform from user input.
+    /// </summary>
+    /// <returns>The selected list action</returns>
     private ListAction GetListAction()
     {
         var actions = EnumHelpers.ToDictionary<ListAction>();
@@ -80,6 +91,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         return actions[choice];
     }
 
+    /// <summary>
+    /// Handles viewing all files in the system.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleViewAllFiles()
     {
         ShowInfo("Loading all files...");
@@ -100,6 +115,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         await OfferFileActions(model);
     }
 
+    /// <summary>
+    /// Handles searching for files based on user input.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleSearchFiles()
     {
         var searchTerm = AnsiConsole.Prompt(
@@ -133,6 +152,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         await OfferFileActions(files);
     }
 
+    /// <summary>
+    /// Handles filtering files based on user-defined criteria.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleFilterFiles()
     {
         var filter = BuildFileFilter();
@@ -158,6 +181,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         await OfferFileActions(files);
     }
 
+    /// <summary>
+    /// Handles displaying detailed information about a specific file.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleFileDetails()
     {
         var fileId = GetFileId("Enter file ID to view details:");
@@ -188,6 +215,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         await OfferSingleFileActions(fileDetails);
     }
 
+    /// <summary>
+    /// Handles exporting the file list to various formats.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleExportFileList()
     {
         var files = await FileChunkingService.GetAllFileMetadataAsync();
@@ -204,6 +235,10 @@ public class FileListHandler : BaseHandler, IConsoleHandler
         await ExportFileList(files, format, includeChunkDetails);
     }
 
+    /// <summary>
+    /// Handles cleanup operations for removing old or unwanted files.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     private async Task HandleCleanupFiles()
     {
         var cleanupOptions = GetCleanupOptions();

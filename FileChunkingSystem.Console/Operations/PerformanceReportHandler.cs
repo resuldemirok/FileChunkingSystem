@@ -11,6 +11,9 @@ using System.Text;
 
 namespace FileChunkingSystem.Console.Handlers;
 
+/// <summary>
+/// Handles performance report generation and display operations in the console application.
+/// </summary>
 public class PerformanceReportHandler : BaseHandler, IConsoleHandler
 {
     public PerformanceReportHandler(
@@ -21,6 +24,10 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
     {
     }
 
+    /// <summary>
+    /// Handles the performance report generation and display process asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     public async Task HandleAsync()
     {
         try
@@ -53,6 +60,10 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
         }
     }
 
+    /// <summary>
+    /// Gets the date range for the performance report from user input.
+    /// </summary>
+    /// <returns>A tuple containing start date, end date, and success flag</returns>
     private (DateTime? startDate, DateTime? endDate, bool ok) GetDateRange()
     {
         var useDateRange = PromptYesNo("Do you want to specify a date range?");
@@ -117,6 +128,12 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
         }
     }
 
+    /// <summary>
+    /// Generates a performance report for the specified date range.
+    /// </summary>
+    /// <param name="startDate">The start date for the report</param>
+    /// <param name="endDate">The end date for the report</param>
+    /// <returns>A task containing the generated performance report</returns>
     private async Task<PerformanceReportModel> GenerateReport(DateTime? startDate, DateTime? endDate)
     {
         return await AnsiConsole.Progress()
@@ -139,6 +156,10 @@ public class PerformanceReportHandler : BaseHandler, IConsoleHandler
             });
     }
 
+    /// <summary>
+    /// Displays the performance report in a formatted console output.
+    /// </summary>
+    /// <param name="report">The performance report to display</param>
     private void DisplayReport(PerformanceReportModel report)
     {
         var panel = new Panel(CreateReportContent(report))

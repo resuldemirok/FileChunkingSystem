@@ -6,6 +6,9 @@ using Spectre.Console;
 
 namespace FileChunkingSystem.Console.Handlers;
 
+/// <summary>
+/// Handles file merging operations, reconstructing original files from their chunks.
+/// </summary>
 public class FileMergeHandler : BaseHandler, IConsoleHandler
 {
     public FileMergeHandler(
@@ -16,6 +19,10 @@ public class FileMergeHandler : BaseHandler, IConsoleHandler
     {
     }
 
+    /// <summary>
+    /// Handles the file merge operation asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     public async Task HandleAsync()
     {
         try

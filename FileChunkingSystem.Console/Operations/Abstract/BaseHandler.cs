@@ -4,6 +4,9 @@ using Spectre.Console;
 
 namespace FileChunkingSystem.Console.Handlers.Abstract;
 
+/// <summary>
+/// Abstract base class for console handlers providing common functionality and services.
+/// </summary>
 public abstract class BaseHandler
 {
     protected readonly IFileChunkingService FileChunkingService;

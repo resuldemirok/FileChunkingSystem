@@ -2,6 +2,9 @@ using System.ComponentModel;
 
 namespace FileChunkingSystem.Console.Enums;
 
+/// <summary>
+/// Defines the available actions that can be performed on files.
+/// </summary>
 public enum MenuFileActions
 {
     [Description("View Details")]

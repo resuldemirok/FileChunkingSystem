@@ -6,6 +6,9 @@ using Spectre.Console;
 
 namespace FileChunkingSystem.Console.Services;
 
+/// <summary>
+/// Main console application class that orchestrates the user interface and handles menu navigation.
+/// </summary>
 public class ConsoleApplication
 {
     private readonly HandlerFactory _handlerFactory;
@@ -19,6 +22,10 @@ public class ConsoleApplication
         _logger = logger;
     }
 
+    /// <summary>
+    /// Runs the console application asynchronously, displaying the main menu and handling user interactions.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation</returns>
     public async Task RunAsync()
     {
         ShowWelcomeMessage();

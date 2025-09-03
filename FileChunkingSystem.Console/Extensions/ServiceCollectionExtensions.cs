@@ -17,8 +17,17 @@ using FileChunkingSystem.Console.Handlers.Factory;
 
 namespace FileChunkingSystem.Console.Extensions;
 
+/// <summary>
+/// Provides extension methods for configuring dependency injection services in the application.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers all application services including database context, repositories, services, and handlers.
+    /// </summary>
+    /// <param name="services">The service collection to add services to</param>
+    /// <param name="configuration">The application configuration</param>
+    /// <returns>The service collection for method chaining</returns>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Database Context

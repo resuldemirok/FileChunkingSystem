@@ -5,6 +5,9 @@ using Spectre.Console;
 
 namespace FileChunkingSystem.Console.Handlers;
 
+/// <summary>
+/// Handles file deletion operations in the console application.
+/// </summary>
 public class FileDeleteHandler : BaseHandler, IConsoleHandler
 {
     public FileDeleteHandler(
