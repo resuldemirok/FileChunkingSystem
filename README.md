@@ -14,7 +14,7 @@ The application uses the following connection strings, configured in `appsetting
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Database=filechunking_dev;Username=postgres;Password=1",
+  "MetadataConnection": "Host=localhost;Database=filechunking_dev;Username=postgres;Password=1",
   "PostgreSQL": "Host=localhost;Database=filechunking_storage_dev;Username=postgres;Password=1",
   "MongoDB": "mongodb://localhost:27017"
 }

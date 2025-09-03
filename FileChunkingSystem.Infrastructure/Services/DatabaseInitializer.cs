@@ -7,11 +7,21 @@ using Npgsql;
 
 namespace FileChunkingSystem.Infrastructure.Services;
 
+/// <summary>
+/// Interface for database initialization operations
+/// </summary>
 public interface IDatabaseInitializer
 {
+    /// <summary>
+    /// Initializes all required databases and applies migrations
+    /// </summary>
     void Initialize();
 }
 
+/// <summary>
+/// Service responsible for initializing and migrating all databases used by the application.
+/// Handles PostgreSQL databases for metadata and storage, and verifies MongoDB connectivity.
+/// </summary>
 public class DatabaseInitializer : IDatabaseInitializer
 {
     private readonly IConfiguration _configuration;
@@ -19,6 +29,13 @@ public class DatabaseInitializer : IDatabaseInitializer
     private readonly MetadataDbContext _metadataContext;
     private readonly StorageDbContext _storageContext;
 
+    /// <summary>
+    /// Initializes a new instance of the DatabaseInitializer
+    /// </summary>
+    /// <param name="configuration">Application configuration</param>
+    /// <param name="logger">Logger instance</param>
+    /// <param name="metadataContext">Metadata database context</param>
+    /// <param name="storageContext">Storage database context</param>
     public DatabaseInitializer(
         IConfiguration configuration, 
         ILogger<DatabaseInitializer> logger,
@@ -31,6 +48,9 @@ public class DatabaseInitializer : IDatabaseInitializer
         _storageContext = storageContext;
     }
 
+    /// <summary>
+    /// Initializes all databases and applies necessary migrations
+    /// </summary>
     public void Initialize()
     {
         InitializeMetadataDatabase();
@@ -38,6 +58,9 @@ public class DatabaseInitializer : IDatabaseInitializer
         InitializeMongoDBDatabases();
     }
 
+    /// <summary>
+    /// Initializes the metadata database and applies EF Core migrations
+    /// </summary>
     private void InitializeMetadataDatabase()
     {
         try
@@ -45,8 +68,10 @@ public class DatabaseInitializer : IDatabaseInitializer
             _logger.LogInformation("Initializing metadata database with migrations...");
 
             var connectionString = _metadataContext.Database.GetConnectionString();
-            var databaseName = ExtractDatabaseNameFromConnectionString(connectionString ?? throw new InvalidOperationException("Metadata database connection string is null"));
+            var databaseName = ExtractDatabaseNameFromConnectionString(connectionString ?? 
+                throw new InvalidOperationException("Metadata database connection string is null"));
             
+            // Ensure database exists before applying migrations
             EnsureDatabaseExists(databaseName, connectionString);
             _metadataContext.Database.Migrate();
 
@@ -59,6 +84,9 @@ public class DatabaseInitializer : IDatabaseInitializer
         }
     }
 
+    /// <summary>
+    /// Initializes the storage database and applies EF Core migrations
+    /// </summary>
     private void InitializeStorageDatabase()
     {
         try
@@ -66,9 +94,12 @@ public class DatabaseInitializer : IDatabaseInitializer
             _logger.LogInformation("Initializing storage database with migrations...");
 
             var connectionString = _storageContext.Database.GetConnectionString();
-            var databaseName = ExtractDatabaseNameFromConnectionString(connectionString ?? throw new InvalidOperationException("Storage database connection string is null"));
+            var databaseName = ExtractDatabaseNameFromConnectionString(connectionString ?? 
+                throw new InvalidOperationException("Storage database connection string is null"));
             
-            EnsureDatabaseExists(databaseName, connectionString ?? throw new InvalidOperationException("Storage database connection string is null"));
+            // Ensure database exists before applying migrations
+            EnsureDatabaseExists(databaseName, connectionString ?? 
+                throw new InvalidOperationException("Storage database connection string is null"));
             _storageContext.Database.Migrate();
 
             _logger.LogInformation("Storage database migrations completed successfully");
@@ -80,16 +111,27 @@ public class DatabaseInitializer : IDatabaseInitializer
         }
     }
 
+    /// <summary>
+    /// Extracts database name from PostgreSQL connection string
+    /// </summary>
+    /// <param name="connectionString">The connection string</param>
+    /// <returns>Database name</returns>
     private string ExtractDatabaseNameFromConnectionString(string connectionString)
     {
         var builder = new NpgsqlConnectionStringBuilder(connectionString);
         return builder.Database ?? throw new InvalidOperationException("Database name not found in connection string");
     }
 
+    /// <summary>
+    /// Ensures that the specified PostgreSQL database exists, creates it if not
+    /// </summary>
+    /// <param name="databaseName">Name of the database</param>
+    /// <param name="originalConnectionString">Original connection string</param>
     private void EnsureDatabaseExists(string databaseName, string originalConnectionString)
     {
         try
         {
+            // Connect to postgres master database to check/create target database
             var builder = new NpgsqlConnectionStringBuilder(originalConnectionString);
             builder.Database = "postgres";
             
@@ -98,6 +140,7 @@ public class DatabaseInitializer : IDatabaseInitializer
             using var connection = new NpgsqlConnection(masterConnectionString);
             connection.Open();
 
+            // Check if database exists
             var checkDbQuery = $"SELECT 1 FROM pg_database WHERE datname = '{databaseName}'";
             using var checkCommand = new NpgsqlCommand(checkDbQuery, connection);
             var exists = checkCommand.ExecuteScalar() != null;
@@ -106,6 +149,7 @@ public class DatabaseInitializer : IDatabaseInitializer
             {
                 _logger.LogInformation("Database '{DatabaseName}' does not exist, creating...", databaseName);
                 
+                // Create database
                 var createDbQuery = $"CREATE DATABASE \"{databaseName}\"";
                 using var createCommand = new NpgsqlCommand(createDbQuery, connection);
                 createCommand.ExecuteNonQuery();
@@ -124,6 +168,9 @@ public class DatabaseInitializer : IDatabaseInitializer
         }
     }
 
+    /// <summary>
+    /// Verifies MongoDB connectivity and database accessibility
+    /// </summary>
     private void InitializeMongoDBDatabases()
     {
         try
@@ -132,6 +179,7 @@ public class DatabaseInitializer : IDatabaseInitializer
             if (!string.IsNullOrEmpty(connectionString))
             {
                 var client = new MongoClient(connectionString);
+                // Test connection by listing databases
                 client.ListDatabaseNames();
                 _logger.LogInformation("MongoDB connection verified successfully");
             }

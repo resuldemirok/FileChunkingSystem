@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     {
         // Database Context
         services.AddDbContext<MetadataDbContext>(options =>
-            options.UseLazyLoadingProxies().UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseLazyLoadingProxies().UseNpgsql(configuration.GetConnectionString("MetadataConnection")));
         services.AddDbContext<StorageDbContext>(options =>
             options.UseLazyLoadingProxies().UseNpgsql(configuration.GetConnectionString("PostgreSQL")));
 

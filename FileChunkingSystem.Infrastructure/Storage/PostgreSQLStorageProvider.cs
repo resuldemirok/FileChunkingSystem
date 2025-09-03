@@ -7,13 +7,25 @@ using Microsoft.Extensions.Logging;
 
 namespace FileChunkingSystem.Infrastructure.Storage;
 
+/// <summary>
+/// PostgreSQL storage provider implementation for storing chunks in PostgreSQL database.
+/// Uses Entity Framework Core to manage chunk storage in the storage database.
+/// </summary>
 public class PostgreSQLStorageProvider : IStorageProvider
 {
     private readonly StorageDbContext _storageContext;
     private readonly ILogger<PostgreSQLStorageProvider> _logger;
 
+    /// <summary>
+    /// Gets the storage provider type
+    /// </summary>
     public StorageProviderType ProviderType => StorageProviderType.PostgreSQL;
 
+    /// <summary>
+    /// Initializes a new instance of the PostgreSQLStorageProvider
+    /// </summary>
+    /// <param name="storageContext">The storage database context</param>
+    /// <param name="logger">Logger instance</param>
     public PostgreSQLStorageProvider(
         StorageDbContext storageContext, 
         ILogger<PostgreSQLStorageProvider> logger)
@@ -22,10 +34,18 @@ public class PostgreSQLStorageProvider : IStorageProvider
         _logger = logger;
     }
 
+    /// <summary>
+    /// Stores a chunk in PostgreSQL database
+    /// </summary>
+    /// <param name="chunkData">The chunk data to store</param>
+    /// <param name="group">The group name</param>
+    /// <param name="key">The unique key for the chunk</param>
+    /// <returns>The storage key</returns>
     public async Task<string> StoreChunkAsync(byte[] chunkData, string group, string key)
     {
         try
         {
+            // Check if chunk already exists
             var existingChunk = await _storageContext.ChunkStorage
                 .FirstOrDefaultAsync(c => c.Key == key);
 
@@ -53,61 +73,67 @@ public class PostgreSQLStorageProvider : IStorageProvider
             }
 
             await _storageContext.SaveChangesAsync();
-            
-            _logger.LogInformation("Chunk stored successfully with key {Key}", key);
+            _logger.LogInformation("Chunk stored successfully in PostgreSQL with key {Key}", key);
             return key;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error storing chunk with key {Key}", key);
+            _logger.LogError(ex, "Error storing chunk in PostgreSQL with key {Key}", key);
             throw;
         }
     }
 
+    /// <summary>
+    /// Retrieves a chunk from PostgreSQL database
+    /// </summary>
+    /// <param name="group">The group name</param>
+    /// <param name="key">The unique key for the chunk</param>
+    /// <returns>The chunk data</returns>
     public async Task<byte[]> RetrieveChunkAsync(string group, string key)
     {
         try
         {
-            var chunkData = await _storageContext.ChunkStorage
-                .Where(c => c.GroupName == group && c.Key == key)
-                .Select(c => c.Data)
-                .FirstOrDefaultAsync();
+            var chunk = await _storageContext.ChunkStorage
+                .FirstOrDefaultAsync(c => c.Key == key && c.GroupName == group);
 
-            if (chunkData == null)
-                throw new KeyNotFoundException($"Chunk not found with key: {key}");
-
-            _logger.LogDebug("Chunk retrieved successfully with key {Key}", key);
-            return chunkData;
+            if (chunk != null) return chunk.Data;
+            
+            throw new KeyNotFoundException($"Chunk not found with key: {key} in group: {group}");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving chunk with key {Key}", key);
+            _logger.LogError(ex, "Error retrieving chunk from PostgreSQL with key {Key}", key);
             throw;
         }
     }
 
+    /// <summary>
+    /// Deletes a chunk from PostgreSQL database
+    /// </summary>
+    /// <param name="group">The group name</param>
+    /// <param name="key">The unique key for the chunk</param>
+    /// <returns>True if deleted successfully, false if not found</returns>
     public async Task<bool> DeleteChunkAsync(string group, string key)
     {
         try
         {
-            var chunkStorage = await _storageContext.ChunkStorage
-                .FirstOrDefaultAsync(c => c.GroupName == group && c.Key == key);
+            var chunk = await _storageContext.ChunkStorage
+                .FirstOrDefaultAsync(c => c.Key == key && c.GroupName == group);
 
-            if (chunkStorage == null)
+            if (chunk != null)
             {
-                _logger.LogWarning("Chunk not found for deletion with key {Key}", key);
-                return false;
+                _storageContext.ChunkStorage.Remove(chunk);
+                await _storageContext.SaveChangesAsync();
+                
+                _logger.LogInformation("Chunk deleted from PostgreSQL: {Key}", key);
+                return true;
             }
-
-            _storageContext.ChunkStorage.Remove(chunkStorage);
-            var result = await _storageContext.SaveChangesAsync();
-
-            _logger.LogInformation("Chunk deleted successfully with key {Key}", key);
-            return result > 0;
+            
+            return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting chunk with key {Key}", key);
+            _logger.LogError(ex, "Error deleting chunk from PostgreSQL with key {Key}", key);
             throw;
         }
     }

@@ -44,7 +44,7 @@ services:
     container_name: filechunking-app
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=filechunking;Username=postgres;Password=1
+      - ConnectionStrings__MetadataConnection=Host=postgres;Database=filechunking;Username=postgres;Password=1
       - ConnectionStrings__PostgreSQL=Host=postgres;Database=filechunking_storage;Username=postgres;Password=1
       - ConnectionStrings__MongoDB=mongodb://mongodb:27017
     ports:
